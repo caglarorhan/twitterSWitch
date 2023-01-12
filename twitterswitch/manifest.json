@@ -5,6 +5,15 @@
   "homepage_url": "https://www.caglarorhan.com",
   "version": "2023.0.1",
   "manifest_version": 3,
+  "action": {
+    "default_icon": {
+      "16": "./img/tar-16.png",
+      "24": "./img/tar-24.png",
+      "32": "./img/tar-32.png"
+    },
+    "default_title": "TwitterSWitch",
+    "default_popup": "popup.html"
+  },
   "icons": {
     "16": "./img/tar-16.png",
     "32": "./img/tar-32.png",
