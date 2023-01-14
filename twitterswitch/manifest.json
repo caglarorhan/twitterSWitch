@@ -5,6 +5,9 @@
   "homepage_url": "https://www.caglarorhan.com",
   "version": "2023.0.1",
   "manifest_version": 3,
+  "permissions": [
+    "tabs"
+  ],
   "action": {
     "default_icon": {
       "16": "./img/tar-16.png",
@@ -20,20 +23,23 @@
     "64": "./img/tar-64.png",
     "128": "./img/tar-128.png"
   },
+  "background": {
+    "service_worker": "./js/background.js"
+  },
+  "externally_connectable": {
+    "matches": ["https://*.twitter.com/*"]
+  },
   "content_scripts": [
     {
       "matches": [
         "https://*.twitter.com/*"
       ],
+      "all_frames": true,
       "js": [
-        "./js/content.js"
-      ]
-    }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": ["./js/content.js"],
-      "matches": [ "https://web-accessible-resources-2.glitch.me/*" ]
+        "./js/content.js",
+        "./js/popup.js"
+      ],
+      "match_about_blank": true
     }
   ]
 }

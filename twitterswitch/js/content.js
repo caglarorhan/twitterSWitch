@@ -1,21 +1,23 @@
 window.addEventListener('load', ()=>{
-    document.addEventListener('scroll',()=>{twitterSWitch.catchTwits()})
+    document.addEventListener('scroll',()=>{twitterSWitch.catchTwits().then(r=>r)})
     twitterSWitch.init();
+
 });
 const twitterSWitch ={
-    init(){
-        this.catchTwits();
-    },
+    dataConversion:{from:'hex', to:'text'},
     ioTypes:{
         hex:"hex",
         text:"text",
         morse:"morse"
     },
-    convert(data={ingredient:"default",from:this.ioTypes.hex, to:this.ioTypes.text}){
+    init(){
+        this.activateHexButton();
+    },
+    convert(data={ingredient:"default",from:this.ioTypes[this.dataConversion.from], to:this.ioTypes[this.dataConversion.to]}){
         let result='';
         switch(data.from) {
             case "hex":
-                if(!this.isThisHex(data.ingredient.substring(0,2))){
+                if(!this.isThisHex(data.ingredient.substring(0,2)) || !this.isThisHex(data.ingredient.substring(3,5))){
                     result = data.ingredient;
                     console.log('it is not a hex string');
                     break;
@@ -41,7 +43,6 @@ const twitterSWitch ={
                         data.ingredient.split('').forEach(t=>{
                             txtHex.push(t.charCodeAt(0).toString(16));
                         })
-
                         let hexED = txtHex.join(' ');
                         result = hexED;
                         break;
@@ -56,21 +57,93 @@ const twitterSWitch ={
         console.log(A,B);
         return A===B;
     },
-    catchTwits(){
-        document.querySelectorAll('[data-testid="tweetText"] :not([data-visited="true"])').forEach(twt=>{
+    async catchTwits(){
+        document.querySelectorAll('[data-testid="tweetText"]:not([data-visited="true"])').forEach(twt=>{
             twt.dataset.visited="true";
-            //twt.innerHTML=this.convert({ingredient: twt.innerHTML,from: this.ioTypes.text,to: this.ioTypes.hex})
-            twt.style.cursor="pointer";
-            twt.title = "Use CTRL+click to convert hex to text on this tweet.";
-            twt.addEventListener("click",(e)=>{
-                if(e.ctrlKey && twt.dataset.hexed!=="true"){
-                    twt.innerHTML=this.convert({ingredient: twt.textContent,from: this.ioTypes.hex,to: this.ioTypes.text})
-                    twt.dataset.hexed="true";
+            twt.addEventListener('mouseover',(e)=>{
+                if(twt.dataset.converted!=="true" && (this.isThisHex(twt.textContent.substring(0,2)) && this.isThisHex(twt.textContent.substring(3,5)))){
+                    twt.textContent=this.convert({ingredient: twt.textContent,from: this.dataConversion.from,to: this.dataConversion.to});
+                    console.log('Event triggered and conversion done!');
+                    twt.dataset.converted="true";
                 }
             })
         })
+        return true;
+    },
+    async sendRequestToExtension(request={}){
+            const response = await chrome.runtime.sendMessage(request);
+            // do something with response here, not outside the function
+            console.log(response);
+    },
+    tweetButtons(){
+        // aria-labelledby="modal-header" // modal bilgisi
+        let sideNavTweetButton = document.querySelector('div[data-testid="SideNav_NewTweet_Button"]');
+        let tweetButtonInline = document.querySelector('div[data-testid="tweetButtonInLine"]');
+        let tweetButton = document.querySelector('div[data-testid="tweetButton"]');
+    },
+    activateHexButton(){
+        let tweetButtonInline = document.querySelector('div[data-testid="tweetButtonInLine"]');
+        setTimeout(()=>{
+            let targetButtonDiv = document.querySelector('div[data-testid="geoButton"]');
+            console.log([...targetButtonDiv.classList]);
+            console.log(targetButtonDiv);
+            let newButton = document.createElement('div');
+            newButton.dataset.testId ="hexButton";
+            newButton.id = "hexButton";
+            newButton.setAttribute('role', 'button');
+            newButton.setAttribute('aria-label', 'Convert To Hex');
+            newButton.style.cursor='pointer';
+            targetButtonDiv.classList.forEach(className=>newButton.classList.add(className));
+
+            newButton.innerHTML =`<div dir="ltr" class="css-901oao r-1awozwy r-1cvl2hr r-6koalj r-18u37iz r-16y2uox r-37j5jr r-a023e6 r-b88u0q r-1777fci r-rjixqe r-bcqeeo r-q4m81j r-qvutc0"><svg fill=\"#69b2f7\" height=\"14px\" width=\"16px\" version=\"1.1\" id=\"Capa_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 490 490\" xml:space=\"preserve\" stroke=\"#69b2f7\"><g id=\"SVGRepo_bgCarrier\" stroke-width=\"0\"></g><g id=\"SVGRepo_tracerCarrier\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></g><g id=\"SVGRepo_iconCarrier\"> <g> <path d=\"M122.5,34.031L0,245.001l122.5,210.968h245L490,245.001L367.5,34.031H122.5z M287.558,318.293h-85.116l-42.557-73.292 l42.557-73.292h85.116l42.557,73.292L287.558,318.293z\"></path> </g> </g></svg></div>`;
+            targetButtonDiv.insertAdjacentElement('afterend',newButton);
+
+            console.log(newButton);
+            document.getElementById('hexButton').addEventListener('mouseover',(e)=>{
+                let target = e.target;
+                while(target.id!=='hexButton'){
+                    target=target.parentNode;
+                }
+                target.classList.replace('r-1niwhzg', 'r-1peqgm7');
+                console.log(target.classList);
+            });
+            document.getElementById('hexButton').addEventListener('mouseout',(e)=>{
+                let target = e.target;
+                while(target.id!=='hexButton'){
+                    target=target.parentNode;
+                }
+                target.classList.replace('r-1peqgm7', 'r-1niwhzg');
+                console.log(target.classList);
+
+            });
+            document.getElementById('hexButton').addEventListener('click',(e)=>{
+                let target = e.target;
+                while(target.id!=='hexButton'){
+                    target=target.parentNode;
+                }
+                let targetTextArea = document.querySelector('.DraftEditor-root [data-text="true"]');
+                targetTextArea.innerHTML = this.convert({ingredient:targetTextArea.innerHTML,from:this.ioTypes["text"], to:this.ioTypes["hex"]});
+
+            })
+        },2000)
     }
 
 };
 
+chrome.runtime.onMessage.addListener((request, sender, sendResponse)=>{
+    console.log('FULL REQUEST:',request);
+    switch(request.action){
+        case 'dataConversionDirections':
+            let val = request.value;
+            console.log('val:',val);
+            twitterSWitch.dataConversion.from=val.from;
+            twitterSWitch.dataConversion.to=val.to;
+
+            break;
+        default:
+            console.log(request.value);
+            break;
+    }
+    return true;
+});
 

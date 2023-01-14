@@ -3,13 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title>TwitterSWitch</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="css/popup.css"/>
+    <script src="./js/popup.js"></script>
 </head>
-<body style="width:300px; height:300px;">
-Twitter message body convertor.
-
+<body style="width:400px; height:400px;">
+<nav style="height: 40px;">
+    <div class="nav-wrapper">
+        <a href="#" class="brand-logo center-align" style="margin-top: -10px">TwitterSWitch</a>
+    </div>
+</nav>
+<h5>Data Convertor</h5>
 <ul style="list-style-type: none">
-    <li><input type="radio" name="direction" value="hex2text">HEX to TEXT</li>
-    <li><input type="radio" name="direction" value="text2hex">TEXT 2 HEX</li>
+    <li><label>
+        <input name="dataConvertorOptions" type="radio" data-from="hex" data-to="text" />
+        <span>HEX to Text</span>
+    </label>
+    </li>
+    <li><label>
+        <input name="dataConvertorOptions" type="radio" data-from="text" data-to="hex" />
+        <span>Text to Hex</span>
+    </label></li>
+
 </ul>
 
 </body>
