@@ -1,5 +1,4 @@
 window.addEventListener('load', ()=>{
-    document.addEventListener('scroll',()=>{twitterSWitch.catchTwits().then(r=>r)})
     twitterSWitch.init();
 
 });
@@ -11,7 +10,36 @@ const twitterSWitch ={
         morse:"morse"
     },
     init(){
-        this.activateHexButton();
+        let checkFrequency = 100;
+        let timeOut = 5000;
+        let timeCounter=0;
+
+        let checkToolBarLoaded = setInterval(()=>{
+            if(timeCounter>timeOut){
+                clearInterval(checkToolBarLoaded);
+            }
+            if(document.querySelector('div[data-testid="toolBar"]')){
+                clearInterval(checkToolBarLoaded);
+                twitterSWitch.activateHexButton();
+            }
+            console.log('iconlar bekleniyor...');
+            timeCounter+=checkFrequency;
+        },checkFrequency);
+
+        let checkElementLoaded = setInterval(()=>{
+            if(timeCounter>timeOut){
+                clearInterval(checkToolBarLoaded);
+            }
+            if(document.querySelectorAll('[role="group"]').length>0){
+                clearInterval(checkElementLoaded);
+                twitterSWitch.catchTwits().then(r=>r)
+            }
+            console.log('tweetler bekleniyor...');
+            timeCounter+=checkFrequency;
+        },checkFrequency);
+
+
+
     },
     convert(data={ingredient:"default",from:this.ioTypes[this.dataConversion.from], to:this.ioTypes[this.dataConversion.to]}){
         let result='';
@@ -54,7 +82,7 @@ const twitterSWitch ={
     isThisHex(testThis){
         let A = parseInt(testThis,16).toString(16);
         let B = testThis.toLowerCase();
-        console.log(A,B);
+        //console.log(A,B);
         return A===B;
     },
     async catchTwits(){
@@ -75,15 +103,7 @@ const twitterSWitch ={
             // do something with response here, not outside the function
             console.log(response);
     },
-    tweetButtons(){
-        // aria-labelledby="modal-header" // modal bilgisi
-        let sideNavTweetButton = document.querySelector('div[data-testid="SideNav_NewTweet_Button"]');
-        let tweetButtonInline = document.querySelector('div[data-testid="tweetButtonInLine"]');
-        let tweetButton = document.querySelector('div[data-testid="tweetButton"]');
-    },
     activateHexButton(){
-        let tweetButtonInline = document.querySelector('div[data-testid="tweetButtonInLine"]');
-        setTimeout(()=>{
             let targetButtonDiv = document.querySelector('div[data-testid="geoButton"]');
             console.log([...targetButtonDiv.classList]);
             console.log(targetButtonDiv);
@@ -105,7 +125,6 @@ const twitterSWitch ={
                     target=target.parentNode;
                 }
                 target.classList.replace('r-1niwhzg', 'r-1peqgm7');
-                console.log(target.classList);
             });
             document.getElementById('hexButton').addEventListener('mouseout',(e)=>{
                 let target = e.target;
@@ -113,19 +132,27 @@ const twitterSWitch ={
                     target=target.parentNode;
                 }
                 target.classList.replace('r-1peqgm7', 'r-1niwhzg');
-                console.log(target.classList);
 
             });
             document.getElementById('hexButton').addEventListener('click',(e)=>{
+                console.log('Hex Button tiklandi')
                 let target = e.target;
                 while(target.id!=='hexButton'){
                     target=target.parentNode;
                 }
-                let targetTextArea = document.querySelector('.DraftEditor-root [data-text="true"]');
-                targetTextArea.innerHTML = this.convert({ingredient:targetTextArea.innerHTML,from:this.ioTypes["text"], to:this.ioTypes["hex"]});
-
+                let targetTextArea = document.querySelector('.DraftEditor-root [data-testid="tweetTextarea_0"]');
+                console.log(targetTextArea.textContent);
+                let oldContext = targetTextArea.textContent;
+                let hexedContext = this.convert({ingredient:targetTextArea.textContent, from:'text', to:'hex'});
+                navigator.clipboard.writeText(hexedContext).then(r=>r);
+                //--
+                let range = new Range(); //range object
+                range.setStartBefore(targetTextArea.querySelector(':first-child'));
+                range.setEndAfter(targetTextArea.querySelector(':last-child'));
+                let selected  = window.getSelection();
+                selected.addRange(range);
+                //--------
             })
-        },2000)
     }
 
 };
