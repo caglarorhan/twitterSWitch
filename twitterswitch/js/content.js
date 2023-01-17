@@ -1,5 +1,16 @@
 window.addEventListener('load', ()=>{
     twitterSWitch.init();
+    window.addEventListener('popstate', function (event) {
+        // Log the state data to the console
+        if(event.type === 'popstate'){
+            console.log(event.state.state.previousPath);
+        }
+    });
+    // let mainColumn = document.querySelector('main[role="main"]');
+    // const observer = new MutationObserver(()=>{
+    //     console.log('observer triggered');
+    // })
+    // observer.observe(mainColumn,{subtree:true, childList:true})
 
 });
 const twitterSWitch ={
@@ -105,8 +116,8 @@ const twitterSWitch ={
     },
     activateHexButton(){
             let targetButtonDiv = document.querySelector('div[data-testid="geoButton"]');
-            console.log([...targetButtonDiv.classList]);
-            console.log(targetButtonDiv);
+            // console.log([...targetButtonDiv.classList]);
+            // console.log(targetButtonDiv);
             let newButton = document.createElement('div');
             newButton.dataset.testId ="hexButton";
             newButton.id = "hexButton";
@@ -118,7 +129,7 @@ const twitterSWitch ={
             newButton.innerHTML =`<div dir="ltr" class="css-901oao r-1awozwy r-1cvl2hr r-6koalj r-18u37iz r-16y2uox r-37j5jr r-a023e6 r-b88u0q r-1777fci r-rjixqe r-bcqeeo r-q4m81j r-qvutc0"><svg fill=\"#69b2f7\" height=\"14px\" width=\"16px\" version=\"1.1\" id=\"Capa_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 490 490\" xml:space=\"preserve\" stroke=\"#69b2f7\"><g id=\"SVGRepo_bgCarrier\" stroke-width=\"0\"></g><g id=\"SVGRepo_tracerCarrier\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></g><g id=\"SVGRepo_iconCarrier\"> <g> <path d=\"M122.5,34.031L0,245.001l122.5,210.968h245L490,245.001L367.5,34.031H122.5z M287.558,318.293h-85.116l-42.557-73.292 l42.557-73.292h85.116l42.557,73.292L287.558,318.293z\"></path> </g> </g></svg></div>`;
             targetButtonDiv.insertAdjacentElement('afterend',newButton);
 
-            console.log(newButton);
+            //console.log(newButton);
             document.getElementById('hexButton').addEventListener('mouseover',(e)=>{
                 let target = e.target;
                 while(target.id!=='hexButton'){
