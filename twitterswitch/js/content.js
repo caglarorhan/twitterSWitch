@@ -1,16 +1,16 @@
 window.addEventListener('load', ()=>{
     twitterSWitch.init();
-    window.addEventListener('popstate', function (event) {
-        // Log the state data to the console
-        if(event.type === 'popstate'){
-            console.log(event.state.state.previousPath);
-        }
-    });
-    // let mainColumn = document.querySelector('main[role="main"]');
-    // const observer = new MutationObserver(()=>{
-    //     console.log('observer triggered');
-    // })
-    // observer.observe(mainColumn,{subtree:true, childList:true})
+    // window.addEventListener('popstate', function (event) {
+    //     // Log the state data to the console
+    //     if(event.type === 'popstate'){
+    //         console.log(event.state.state.previousPath);
+    //     }
+    // });
+    let observedObject = document.body
+    const observer = new MutationObserver(()=>{
+        console.log('observer triggered');
+    })
+    observer.observe(observedObject,{subtree:true, childList:true})
 
 });
 const twitterSWitch ={
@@ -34,6 +34,7 @@ const twitterSWitch ={
                 twitterSWitch.activateHexButton();
             }
             console.log('iconlar bekleniyor...');
+
             timeCounter+=checkFrequency;
         },checkFrequency);
 
@@ -45,6 +46,12 @@ const twitterSWitch ={
                 clearInterval(checkElementLoaded);
                 twitterSWitch.catchTwits().then(r=>r)
             }
+            // let mainColumn = document.querySelector('main[role="main"]');
+            // const observer = new MutationObserver(()=>{
+            //     console.log('observer triggered');
+            //     twitterSWitch.activateHexButton();
+            // })
+            // observer.observe(mainColumn,{subtree:true, childList:true})
             console.log('tweetler bekleniyor...');
             timeCounter+=checkFrequency;
         },checkFrequency);
